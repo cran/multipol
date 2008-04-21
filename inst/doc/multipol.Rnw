@@ -1,0 +1,536 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+\documentclass[nojss]{jss}
+\usepackage{dsfont}
+\usepackage{bbm}
+\usepackage{amsfonts}
+\usepackage{wasysym}
+\usepackage{amssymb}
+
+
+%\title{Programmers' Niche: Multivariate polynomials in \R}
+%\subtitle{The \pkg{multipol} package}
+%\author{Robin K. S. Hankin}
+%\maketitle
+
+
+\author{Robin K. S. Hankin\\University of Cambridge}
+\title{Multivariate polynomials in \proglang{R}}
+%\VignetteIndexEntry{A vignette for the multipol package}
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Robin K. S. Hankin}
+\Plaintitle{Multivariate polynomials in R}
+\Shorttitle{Multivariate polynomials in \proglang{R}}
+
+%% an abstract and keywords
+\Abstract{
+In this short article I introduce the \pkg{multipol} package, which
+provides some functionality for handling multivariate polynomials; the
+package is discussed here from a programming perspective.  An example
+from the field of enumerative combinatorics is presented.
+
+This vignette is based on~\citet{RNews:Hankin:2008}.
+}
+
+\Keywords{Multivariate polynomials, \proglang{R}}
+\Plainkeywords{Multivariate polynomials, R}
+
+%% publication information
+%% NOTE: This needs to filled out ONLY IF THE PAPER WAS ACCEPTED.
+%% If it was not (yet) accepted, leave them commented.
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2004}
+%% \Submitdate{2004-09-29}
+%% \Acceptdate{2004-09-29}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Robin K. S. Hankin\\
+  Cambridge Centre for Climate Change Mitigation\\
+  University of Cambridge\\
+  19 Silver Street\\
+  Cambridge CB3 9EP\\
+  United Kingdom\\
+  E-mail: \email{rksh1@cam.ac.uk}\\
+  URL: \url{http://www.landecon.cam.ac.uk/staff/profiles/rhankin.htm}
+}
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Telephone: +43/1/31336-5053
+%% Fax: +43/1/31336-734
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+<<setup,echo=FALSE,print=FALSE>>=
+ignore <- require(multipol)
+ignore <- require(polynom)
+@ 
+
+\SweaveOpts{}
+\begin{document}
+\section{Univariate polynomials}
+
+A {\em polynomial} is an algebraic expression of the form
+$\sum_{i=0}^na_ix^i$ where the~$a_i$ are real or complex numbers
+and~$n$ (the {\em degree} of the polynomial) is a nonnegative integer.
+A polynomial may be viewed in three distinct ways:
+
+\begin{itemize}
+\item Polynomials are interesting and instructive examples of complete
+  functions: they map $\mathbbm{C}$ (the complex numbers)
+  to~$\mathbbm{C}$.
+\item Polynomials are a map from the positive integers
+  to~$\mathbbm{C}$: this is~$f(n)=a_n$ and one demands that~$\exists
+  n_0$ with~$n\geqslant n_0\longrightarrow f(n)=0$.  Relaxation of the
+  final clause results in a {\em generating function} which is useful
+  in combinatorics.
+  \item Polynomials with complex coefficients form an algebraic object
+    known as a {\em ring}: polynomial multiplication is associative
+    and distributive with respect to addition; $(ab)c=a(bc)$ and
+    $a(b+c)=ab+ac$.
+\end{itemize}  
+
+A {\em multivariate polynomial} is a generalization of a polynomial to
+expressions of the form~$\sum a_{i_1i_2\ldots i_d}\prod_{j=1}^d
+x_j^{i_j}$.  The three characterizations of polynomials above
+generalize to the multivariate case, but note that the algebraic
+structure is more general.
+
+In the context of \proglang{R} programming, the first two points
+typically dominate.  Viewing a polynomial as a function is certainly
+second nature to the current readership and unlikely to yield new
+insight.  But generating functions are also interesting and useful
+applications of polynomials~\citep{wilf1994} which may be less
+familiar and here I discuss an example from the discipline of integer
+partitions~\citep{andrews1998}.
+
+A {\em partition of an integer}~$n$ is a non-increasing sequence of
+positive integers~$p_1,p_2,\ldots,p_r$ such
+that~$n=\sum_{i=1}^rp_i$~\citep{hankin2006}.  How many distinct
+partitions does~$n$ have?
+
+The answer is the coefficient of~$x^n$ in
+\[
+\prod_{i=1}^n
+\frac{1}{1-x^i}
+\]
+
+(observe that we may truncate the Taylor expansion of~$1/(1-x^j)$ to
+terms not exceeding~$x^n$; thus the problem {\em is} within the domain
+of polynomials as infinite sequences of coefficients are not
+required).  Here, as in many applications of generating functions, one
+uses the mechanism of polynomial multiplication as a bookkeeping
+device to keep track of the possibilities.  The \proglang{R} idiom
+used in the \pkg{polynom} package is a spectacularly efficient method
+for doing so.
+
+Multivariate polynomials generalize the concept of generating
+function, but in this case the functions are from $n$-tuples of
+nonnegative integers to~$\mathbbm{C}$.  An example is given in the
+appendix below.
+
+\subsection[The polynom package]{The \pkg{polynom} package}
+
+The \pkg{polynom} package~\citep{venables2007} is a consistent and
+convenient suite of software for manipulating polynomials.  This
+package was originally written in~1993 and is used
+by~\citet{venables2001} as an example of S3 classes.
+
+The following \proglang{R} code shows the \pkg{polynom} package in
+use; the examples are then generalized to the multivariate case using
+the \pkg{multipol} package.
+
+<<polyIntro>>=
+require(polynom)
+(p <- polynomial(c(1,0,0,3,4)))
+str(p)
+@ 
+
+See how a polynomial is represented as a vector of coefficients with
+\code{p[i]} holding the coefficient of $x^{i-1}$; note the off-by-one
+issue.  Observe the natural print method which suppresses the zero
+entries---but the internal representation requires all coefficients so
+a length~5 vector is needed to store the object.
+
+Polynomials may be multiplied and added:
+
+<<polyOps>>=
+p + polynomial(1:2)
+p*p
+@ 
+
+Note the overloading of `+' and '*': polynomial addition and
+multiplication are executed using the natural syntax on the command
+line.  Observe that the addition is not entirely straightforward: the
+shorter polynomial must be padded with zeros.
+
+A polynomial may be viewed either as an object, or a function.
+Coercing a polynomial to a function is straightforward:
+
+<<polyFunc>>=
+f1 <- as.function(p)
+f1(pi)
+f1(matrix(1:6,2,3))
+@
+
+Note the effortless and transparent vectorization of \code{f1()}.
+
+\section{Multivariate polynomials}
+
+There exist several methods by which polynomials may be generalized to
+multipols.  To this author, the most natural is to consider an array
+of coefficients; the dimensionality of the array corresponds to the
+arity of the multipol.  However, other methods suggest themselves and
+a brief discussion is given at the end.
+
+Much of the univariate polynomial functionality presented above
+is directly applicable to multivariate polynomials.
+
+<<set_showarray,echo=FALSE>>=
+options("showchars" = FALSE)
+@ 
+
+<<define_a>>=
+require(multipol)
+(a <- as.multipol(matrix(1:10,nrow=2)))
+@ 
+
+See how a multipol is actually an array, with one extent per variable
+present, in this case 2, although the package is capable of
+manipulating polynomials of arbitrary arity.
+
+Multipol addition is a slight generalization of the univariate case:
+
+<<a_plus_b>>=
+b <-  as.multipol(matrix(1:10,ncol=2))
+a+b
+@ 
+
+In the multivariate case, the zero padding must be done in each array
+extent; the natural command-line syntax is achieved by defining an
+appropriate \code{Ops.multipol()} function to overload the arithmetic
+operators.
+
+\subsection{Multivariate polynomial multiplication}
+
+The heart of the package is multipol multiplication:
+
+<<a_times_b>>=
+a * b
+@ 
+
+Multivariate polynomial multiplication is considerably more involved
+than in the univariate case.  Consider the coefficient of~$x^2y^2$ in
+the product.  This is
+\[
+\begin{array}{l}
+\begin{array}{l}
+\hphantom{{}+{}}C_a\left(x^2y^2\right) C_b\left(1\right)  + C_a\left(xy^2  \right) C_b\left(x\right) +  C_a\left(y^2   \right) C_b\left(x^2\right) \\
+{}+C_a\left(x^2y \right)  C_b\left(y\right)  + C_a\left(xy \right)  C_b\left(xy\right)  + C_a\left(y\right) C_b\left(x^2y\right)  \vphantom{h^{h^h}}\\
+{}+C_a\left(x^2\right) C_b\left(y^2\right)   + C_a\left(x\right) C_b\left(xy^2\right)   + C_a\left(1\right) C_b\left(x^2y^2\right)\vphantom{h^{h^h}}
+\end{array}\\
+{}= \hphantom{{}+{}}  0\cdot 1 + 6\cdot 2 + 5\cdot 3\\
+ \hphantom{{}={}} + 0\cdot 6 + 4\cdot 7 + 3\cdot 8\\
+ \hphantom{{}={}} + 0\cdot 0 + 2\cdot 0 + 1\cdot 0\\
+{}= 79,
+\end{array}
+\]
+ where ``$C_a\left(x^my^n\right)$'' means the coefficient of
+$x^my^n$ in polynomial \code{a}.  It should be clear that large
+multipols involve more terms and a typical example is given later in
+the paper.
+
+\subsubsection[Multivariate polynomial multiplication in multipol]{Multivariate polynomial multiplication in \pkg{multipol}}
+
+The appropriate \proglang{R} idiom is to follow the above prose
+description in a vectorized manner; the following extract from
+\code{mprod()} is very slightly edited in the interests of clarity.
+
+First we define a
+matrix, \code{index}, whose rows are the array indices of the product:
+
+\begin{Schunk}
+  \begin{Sinput}
+    outDims <- dim(a)+dim(b)-1
+  \end{Sinput}
+  \begin{quote}\it
+    Here \code{outDims} is the dimensions of the product.  Note again
+    the off-by-one issue: the package uses array indices internally,
+    while the user consistently indexes by variable power.
+  \end{quote}
+  \begin{Sinput}
+    index <- expand.grid(lapply(outDims,seq_len))
+  \end{Sinput}
+  \begin{quote}\it 
+    Each row of matrix \code{index} is thus an array index for the product.
+    
+    The next step is to define a convenience function \code{f()}, whose
+    argument \code{u} is a row of \code{index}, that returns the entry
+    in the multipol product:
+  \end{quote}
+  \begin{Sinput}
+    f <- function(u){
+      jja <-
+      expand.grid(lapply(u,function(i)0:(i-1)))
+      jjb <- -sweep(jja, 2, u)-1
+  \end{Sinput}
+  \begin{quote}\begin{quote}\it
+      So \code{jja} is the (power) index of \code{a}, and the rows of
+      \code{jjb} added to those of \code{jja} give \code{u}, which is the
+      power index of the returned array.  Now not all rows of \code{jja}
+      and \code{jjb} correspond to extant elements of \code{a} and \code{b}
+      respectively; so define a Boolean variable \code{wanted} that selects
+      just the appropriate rows:
+  \end{quote}\end{quote}
+  \begin{Sinput}    
+    wanted <-
+    apply(jja,1,function(x)all(x < dim(a))) &
+    apply(jjb,1,function(x)all(x < dim(b))) &
+    apply(jjb,1,function(x)all(x >= 0))
+  \end{Sinput}
+  \begin{quote}\begin{quote}\it 
+      Thus element \code{n} of \code{wanted} is \code{TRUE} only if the
+      \code{n}th row of both \code{jja} and \code{jjb} correspond to a
+      legal element of \code{a} and \code{b} respectively.  Now perform the
+      addition by summing the products of the legal elements:
+  \end{quote}\end{quote}
+  \begin{Sinput}
+    sum(a[1+jja[wanted,]] * b[1+jjb[wanted,]])
+    }
+  \end{Sinput}
+  \begin{quote}\it
+    Thus function \code{f()} returns the coefficient, which is the sum of
+    products of pairs of legal elements of \code{a} and \code{b}.  Again
+    observe the off-by-one issue.
+    
+    Now \code{apply()} function \code{f()} to the rows of \code{index}
+    and reshape:
+  \end{quote}
+  \begin{Sinput}
+    out <- apply(index,1,f)
+    dim(out) <- outDims
+  \end{Sinput}
+  \begin{quote}{\it 
+    Thus array \code{out} contains the multivariate polynomial product
+of \code{a} and \code{b}.}
+  \end{quote}
+\end{Schunk}
+
+The preceding code shows how multivariate polynomials may be
+multiplied.  The implementation makes no assumptions about the entries
+of \code{a} or \code{b} and the coefficients of the product are summed
+over all possibilities; opportunities to streamline the procedure are
+discussed below.
+
+\subsection{Multipols as functions}
+
+Polynomials are implicitly functions of one variable; multivariate
+polynomials are functions too, but of more than one argument.
+Coercion of a multipol to a function is straightforward:
+
+<<coerce_to_function,echo=TRUE,print=FALSE>>=
+f2 <- as.function(a*b)
+@ 
+
+<<execute_f2,echo=TRUE,print=TRUE>>=
+f2(c(x=1,y=3i))
+@ 
+
+It is worth noting the seamless integration between \pkg{polynom} and
+\pkg{multipol} in this regard: \code{f1(a)} is a multipol [recall that
+  \code{f1()} is a function coerced from a univariate polynomial].
+
+
+\subsection{Multipol extraction and replacement}
+
+One often needs to extract or replace parts of a multipol.  The
+package includes extraction and replacement methods but, partly
+because of the off-by-one issue, these are not straightforward.
+
+Consider the case where one has a multipol and wishes to extract the
+terms of order zero ane one:
+
+<<showExtraction,echo=TRUE,print=TRUE>>=
+a[0:1,0:1]
+@
+
+Note how the off-by-one issue is handled: \code{a[i,j]} is the
+coefficient of $x^iy^j$ (here the constant and first-order terms); the
+code is due to~\citet{rougier2007}.  Replacement is slightly
+different:
+
+<<show_replacement_method>>=
+a[0,0] <- -99
+a
+@ 
+
+Observe how replacement operators---unlike extraction
+operators---return a multipol; this allows expeditious modification of
+multivariate polynomials.  The reason that the extraction operator
+returns an array rather than a multipol is that the extracted object
+often does not have unambiguous interpretation as a multipol (consider
+\code{a[-1,-1]}, for example).  It seems to this author that the loss
+of elegance arising from the asymmetry between extraction and
+replacement is amply offset by the impossibility of an extracted
+object's representation as a multipol being undesired---unless the
+user explicitly coerces.
+
+\section{The elephant in the room}
+
+Representing a multivariate polynomial by an array is a natural and
+efficient method, but suffers some disadvantages.
+
+Consider Euler's four-square identity
+
+\begin{eqnarray*}
+\left(a_1^2+a_2^2+a_3^2+a_4^2\right)\cdot
+\left(b_1^2+b_2^2+b_3^2+b_4^2\right)=\\
+\left(a_1b_1 - a_2b_2 - a_3b_3 - a_4b_4\right)^2+\\
+\left(a_1b_2 + a_2b_1 + a_3b_4 - a_4b_3\right)^2+\\
+\left(a_1b_3 - a_2b_4 + a_3b_1 + a_4b_2\right)^2+\\
+\left(a_1b_4 + a_2b_3 - a_3b_2 + a_4b_1\right)^2\hphantom{+}
+\end{eqnarray*}
+\noindent
+which was discussed in~\citeyear{euler1749} in a letter
+from~\citeauthor{euler1749} to Goldbach.  The identity is important in
+number theory, and may be proved straightforwardly by direct
+expansion\footnote{Or indeed more elegantly by observing that both
+  sides of the identity express the absolute value of the product of
+  two quaternions:
+  $\left|a\right|^2\left|b\right|^2=\left|ab\right|^2$.  With the
+  \pkg{onion} package~\citep{Rnews:Hankin:a:2006}, one would define
+  \code{f <- function(a,b){Norm(a)*Norm(b) - Norm(a*b)}} and observe
+  (for example) that \code{f(rquat(rand="norm"),rquat(rand="norm"))}
+  is zero to machine precision.}.  It may by verified to machine
+precision using the \pkg{multipol} package; the left hand side is
+given by:
+
+\begin{Schunk}
+\begin{Sinput}
+> options("showchars" = TRUE)
+> lhs <- polyprod(ones(4,2),ones(4,2))
+\end{Sinput}
+\begin{Soutput}
+[1] "1*x1^2*x5^2 + 1*x2^2*x5^2 + ...
+\end{Soutput}
+\end{Schunk}
+
+(the right hand side's idiom is more involved), but this relatively
+trivial expansion requires about~20 minutes on my $1.5\,\rm{GHz}$~G4;
+the product comprises~$3^8=6561$ elements, of which only~16 are
+nonzero.  Note the \code{options()} statement controlling the format
+of the output which causes the result to be printed in a more
+appropriate form.  Clearly the \pkg{multipol} package as currently
+implemented is inefficient for multivariate problems of this nature in
+which the arrays possess few nonzero elements.
+
+\subsubsection{A challenge}
+
+The inefficiency discussed above is ultimately due to the storage and
+manipulation of many zero coefficients that may be omitted from a
+calculation.  Multivariate polynomials for which this is an issue
+appear to be common: the package includes many functions---such as
+\code{uni()}, \code{single()}, and \code{lone()}---that define useful
+multipols in which the number of nonzero elements is very small.
+
+In this section, I discuss some ideas for implementations in which
+zero operations are implicitly excluded.  These ideas are presented in
+the spirit of a request for comments: although they seem to this
+author to be reasonable methodologies, readers are invited to discuss
+the ideas presented here and indeed to suggest
+alternative strategies.
+
+The canonical solution would be to employ some form of sparse array
+class, along the lines of Mathematica's \code{SparseArray}.
+Unfortunately, no such functionality exists as
+of~\citeyear{venables2008}, but C++ includes a ``map''
+class~\citep{stroustrup} that would be ideally suited to this
+application.
+
+There are other paradigms that may be worth exploring.  It is possible
+to consider a multivariate polynomial of arity~$d$ (call this an
+object of class~$P^d$) as being a univariate polynomial whose
+coefficients are of class~$P^{d-1}$---class~$P^0$ would be a real or
+complex number---but such recursive class definitions appear not to be
+possible with the current implementation of~S3 or
+S4~\citep{venables2008}.  Recent experimental work by~\citet{west2008}
+exhibits a proof-of-concept in C++ which might form the back end of an
+\proglang{R} implementation.  Euler's identity appears to be a
+particularly favourable example and is proved essentially
+instantaneously.
+
+
+\section{Conclusions}
+
+This short document introduces the \pkg{multipol} package that
+provides functionality for manipulating multivariate polynomials.  The
+\pkg{multipol} package builds on and generalizes the \pkg{polynom}
+package of~\citeauthor{venables2007}, which is restricted to the case
+of univariate polynomials.  The generalization is not straightforward
+and presents a number of programming issues that were discussed.
+
+One overriding issue is that of performance: many multivariate
+polynomials of interest are ``sparse'' in the sense that they have
+many zero entries that unnecessarily consume storage and processing
+resources.
+
+Several possible solutions are suggested, in the form of a request for
+comments.  The canonical method appears to be some form of sparse
+array, for which the ``map'' class of the C++ language is ideally
+suited.  Implementation of such functionality in \proglang{R} might
+well find application in fields other than multivariate polynomials.
+
+\section{An example}
+
+ This appendix presents a brief technical example of
+multivariate polynomials in use in the field of enumerative
+combinatorics~\citep{good1976}.  Suppose one wishes to determine how
+many contingency tables, with non-negative integer entries, have
+specified row and column marginal totals.  The appropriate generating
+function is
+
+\[
+\prod_{1\leqslant i\leqslant\mathit{nr}}
+\prod_{1\leqslant j\leqslant\mathit{nc}}\frac{1}{1-x_iy_j}
+\]
+
+\noindent where the table has~$nr$ rows and~$nc$ columns (the number
+of contingency tables is given by the coefficient
+of~$x_1^{s_1}x_2^{s_2}\cdots x_{r}^{s_r}\cdot y_1^{t_1}y_2^{t_2}\cdots
+y_{t}^{t_c}$ where the~$s_i$ and~$t_i$ are the row- and column- sums
+respectively).  The \proglang{R} idiom for the generating function
+\code{gf} in the case of~$nr=nc=n=3$ is:
+
+\begin{Schunk}
+\begin{Sinput}
+ n <- 3
+jj <- as.matrix(expand.grid(seq_len(n),n+seq_len(n)))
+ f <- function(i) ooom(n,lone(2*n,jj[i,]),maxorder=n)
+ u <- c(sapply(seq_len(n^2),f,simplify=FALSE))
+gf <- do.call("mprod", u)
+\end{Sinput}
+\end{Schunk}
+
+[here function \code{ooom()} is ``one-over-one-minus''; and
+  \code{mprod()} is the function name for multipol product].  In this
+case, it is clear that sparse array functionality would not result in
+better performance, as almost every element of the generating function
+\code{gf} is nonzero.  Observe that the maximum of \code{gf},
+\Sexpr{55}, is consistent with~\citet{sloane2008}.
+
+
+\subsubsection*{Acknowledgements}
+I would like to acknowledge the many stimulating comments made by the
+\proglang{R}-help list.  In particular, the insightful comments from Bill
+Venables and Kurt Hornik were extremely helpful.
+
+\bibliography{multipol}
+\end{document}
