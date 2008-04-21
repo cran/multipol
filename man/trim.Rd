@@ -3,12 +3,11 @@
 \alias{taylor}
 \title{Remove redundant entries from a multipol}
 \description{
-
   Remove redundant entries from a multivariate polynomial: function
-\code{trim()} trims the array of non-significant zeros as far as
-possible without altering its value as a multipol; function
-\code{taylor()} returns the multivariate Taylor expansion to a specified
-order.
+  \code{trim()} trims the array of non-significant zeros as far as
+  possible without altering its value as a multipol; function
+  \code{taylor()} returns the multivariate Taylor expansion to a
+  specified order.
 }
 \usage{
 trim(a)

@@ -41,12 +41,18 @@ mplus(...,  trim = TRUE , maxorder=NULL)
   pattern; they are not intended for the end user.  They are not
   exported from the namespace as they begin with a dot.
 
-  Five conveniently-named functions [viz \code{mprod()} for products,
-  \code{mplus()} for addition, \code{mneg()} for the negative,
-  \code{mps()} for adding a scalar, and \code{mpow()} for powers] are
-  provided in the package for the end-user; these offer greater control
-  than the arithmetic command-line operations in that arguments
-  \code{trim} or \code{maxorder} may be set.
+  Five conveniently-named functions are provided in the package for the
+  end-user; these offer greater control than the arithmetic command-line
+  operations in that arguments \code{trim} or \code{maxorder} may be
+  set.  They are:
+
+  \itemize{
+    \item \code{mprod()} for products,
+    \item \code{mplus()} for addition,
+    \item \code{mneg()} for the negative,
+    \item \code{mps()} for adding a scalar,
+    \item \code{mpow()} for powers.
+    }
 
   Addition and multiplication of multivariate polynomials is commutative
   and associative, to machine precision.

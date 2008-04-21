@@ -7,10 +7,11 @@
   Coerce multipols to arrays; unclass
 }
 \usage{
-\method{as.array}{multipol}(x)
+\method{as.array}{multipol}(x, ...)
 }
 \arguments{
   \item{x}{multipol}
+  \item{...}{Further arguments passed to \code{NextMethod()}}
 }
 \author{Robin K. S. Hankin}
 \examples{

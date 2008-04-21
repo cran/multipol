@@ -294,15 +294,14 @@ out
   }
 }
 
-"as.array.default" <- base::as.array
-
-"as.array" <- function(x) {
-  UseMethod("as.array")
+if(getRversion() < "2.8.0"){
+  "as.array" <- function(x, ...){UseMethod("as.array")}
+  "as.array.default" <- function(x, ...){base::as.array(x)}
 }
 
-"as.array.multipol" <- function(x){
+"as.array.multipol" <- function(x, ...){
   x <- unclass(x)
-  NextMethod(x)
+  NextMethod(x, ...)
 }
 
 ".multipol.prod.multipol" <- function(... , trim=TRUE, maxorder=NULL){
