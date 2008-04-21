@@ -18,7 +18,7 @@
 }
 \details{
 
-  Extraction and replacment operate with offset zero (using functions
+  Extraction and replacement operate with offset zero (using functions
   taken from the \pkg{Oarray} package); see the examples section.  This
   is so that the index matches the power required (there is an
   off-by-one issue.  The \emph{first} element corresponds to the

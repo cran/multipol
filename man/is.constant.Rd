@@ -11,7 +11,7 @@ is.zero(a, allow.untrimmed = TRUE)
 }
 \arguments{
   \item{a}{A multipol}
-  \item{allow.untrimmed}{Boolean with default \code{TRUE} meaning to to
+  \item{allow.untrimmed}{Boolean with default \code{TRUE} meaning to
     allow a multipol to be zero/constant even if one or more array
     extents exceed 2}
 }

@@ -11,7 +11,7 @@
   such as addition, multiplication, and integer powers.
 }
 \usage{
-Ops.multipol(e1, e2 = NULL)
+\method{Ops}{multipol}(e1, e2 = NULL)
 mprod(...,  trim = TRUE , maxorder=NULL)
 mplus(...,  trim = TRUE , maxorder=NULL)
  mneg(a,    trim = TRUE , maxorder=NULL)

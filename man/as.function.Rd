@@ -7,7 +7,7 @@
 Coerce a multipol to a function using environments
 }
 \usage{
-as.function.multipol(x, ...)
+\method{as.function}{multipol}(x, ...)
 }
 \arguments{
   \item{x}{A multipol}
@@ -16,7 +16,7 @@ as.function.multipol(x, ...)
 \author{Robin K. S. Hankin}
 \seealso{\code{\link{as.multipol}}}
 \examples{
-a <- as.multipol(array (1:12 ,c(2,3,2)))
+a <- as.multipol(array (1:12, c(2,3,2)))
 
 f1 <- as.function(a)
 f2 <- as.function(a*a)
