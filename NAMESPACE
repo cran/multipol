@@ -1,1 +1,15 @@
 exportPattern("^[^\\.]")
+
+importFrom(abind,abind)
+
+
+S3method(Ops,          multipol)
+S3method(as.array,     multipol)
+S3method(as.character, multipol)
+S3method(as.function,  multipol)
+S3method(print,        multipol)
+S3method(deriv,        multipol)
+
+S3method("[",     multipol)
+S3method("[<-"  , multipol)
+

@@ -40,7 +40,7 @@ sparse array class.
 \author{
 Robin K. S. Hankin
 
-Maintainer:  <r.hankin@noc.soton.ac.uk>
+Maintainer:  <hankin.robin@gmail.com>
 }
 \references{
   none really

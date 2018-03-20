@@ -2,10 +2,12 @@ require(multipol)
 
 
 
-# Some tests, which I just made up.  It would be good to verify
-# Euler's four-square identity, but this takes too long.
+# Some tests, which I just made up.  
 
-x <- # x is the first three columns of a 21x21 magic square
+ ## x is an arbitrary three-column matrix (it is actually the first
+ ## three columns of a 21x21 magic square).
+
+x <-
 structure(c(209L, 187L, 165L, 143L, 121L, 99L, 77L, 55L, 33L, 
 11L, 430L, 408L, 386L, 364L, 342L, 320L, 298L, 276L, 254L, 232L, 
 231L, 186L, 164L, 142L, 120L, 98L, 76L, 54L, 32L, 10L, 429L, 
@@ -19,6 +21,11 @@ f1 <- as.function(a)
 f2 <- as.function(a*a)
 
 x1 <- floor(x/7)   
+
+
+## now f1() and f2() are functions of arity three (the variables
+## corresponding to the three columns of x1).  Check that the two ways
+## of squaring match:
 
 stopifnot(all(f1(x1)^2 == f2(x1)))
 
@@ -65,3 +72,48 @@ da2 <- deriv(a,2)
 
 stopifnot(all(da1 == matrix(c(2,6,5,12,8,18,11,24    ),nrow=2)))
 stopifnot(all(da2 == matrix(c(4,5,6,14,16,18,30,33,36),nrow=3)))
+
+
+
+
+## Now verify Euler's four-square identity, as seen in the vignette.  This is not run by default because it takes too long:
+
+
+if(FALSE){
+    lhs <- polyprod(ones(4,2),ones(4,2))  
+    rhs <-
+        (
+            ( 
+                +product(c(1,0,0,0, 1,0,0,0)) # +a1.b1
+                -product(c(0,1,0,0, 0,1,0,0)) # -a2.b2
+                -product(c(0,0,1,0, 0,0,1,0)) # -a3.b3
+                -product(c(0,0,0,1, 0,0,0,1)) # -a4.b4
+            )^2
+            +( 
+                +product(c(1,0,0,0, 0,1,0,0)) # +a1.b2
+                +product(c(0,1,0,0, 1,0,0,0)) # +a2.b2
+                +product(c(0,0,1,0, 0,0,0,1)) # +a3.b4
+                -product(c(0,0,0,1, 0,0,1,0)) # -a4.b3
+            )^2
+            +( 
+                +product(c(1,0,0,0, 0,0,1,0)) # +a1.b3
+                -product(c(0,1,0,0, 0,0,0,1)) # -a2.b4
+                +product(c(0,0,1,0, 1,0,0,0)) # +a3.b1
+                +product(c(0,0,0,1, 0,1,0,0)) # +a4.b2
+            )^2
+            +( 
+                +product(c(1,0,0,0, 0,0,0,1)) # +a1.b4
+                +product(c(0,1,0,0, 0,0,1,0)) # +a2.b3
+                -product(c(0,0,1,0, 0,1,0,0)) # -a3.b2
+                +product(c(0,0,0,1, 1,0,0,0)) # +a4.b1
+            )^2
+        )
+    
+    stopifnot(is.zero(lhs-rhs))
+
+}
+
+
+# further work might include verifying Degen's eight square identity
+# but this would involve an array of size 3^16 = 43046721 (which is no
+# problem; the issue is mprod() taking a long time).

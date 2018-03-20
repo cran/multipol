@@ -29,11 +29,18 @@ getOption("varname"))
   \item{...}{Further arguments (currently ignored)}
 }
 \details{
-  The default behaviour of \code{do_dimnames()} and
-\code{as.character()}, and hence the print method for multipols, may be
-modified by using the \code{options()} function.  See examples section
-below.
+
+Function \code{do_dimnames()} is a helper function that takes an array
+and gives it dimnames appropriate for expression as a multipol.  Default
+behaviour is governed by options \code{isb}, \code{varname}, and
+\code{xyz}.  The function might be useful but it is really intended to
+be called by \code{print.multipol()}.
+  
+The default behaviour of \code{do_dimnames()} and \code{as.character()},
+and hence the print method for multipols, may be modified by using the
+\code{options()} function.  See examples section below.
 }
+
 \author{Robin K. S. Hankin}
 \examples{
 
@@ -44,6 +51,14 @@ ones(2,5)
 
 options("xyz" = FALSE)
 ones(2,5)
+
+options("varname" = "fig")
+ones(2,5)
+
+options("showchars" = FALSE)
+ones(2,5)
+
+do_dimnames(matrix(0,2,3),varname="fig",include=TRUE)
 
 }
 \keyword{array}

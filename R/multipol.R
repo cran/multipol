@@ -555,6 +555,8 @@ if(getRversion() < "2.8.0"){
   }
 }
 
+
+"deriv" <- function(expr, i, derivative=1, ...){UseMethod("deriv")}
 "deriv.multipol" <- function(expr, i, derivative=1, ...){
   a <- as.array(expr)
   if(i>length(dim(a))){
