@@ -28,7 +28,13 @@ provides some functionality for handling multivariate polynomials; the
 package is discussed here from a programming perspective.  An example
 from the field of enumerative combinatorics is presented.
 
-This vignette is based on~\citet{RNews:Hankin:2008}.
+The package is almost completely superceded by the \pkg{mvp} and
+\pkg{spray} packages~\citep{hankin2022_mvp,hankin2022_spray} which use
+a sparse array technique and follow \pkg{disordR}
+discipline~\citep{hankin2022_disordR}.  This vignette is based
+on~\citet{RNews:Hankin:2008}; the discussion of sparsity is unchanged
+from 2008.
+
 }
 
 \Keywords{Multivariate polynomials, \proglang{R}}

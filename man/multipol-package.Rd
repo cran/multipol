@@ -1,23 +1,14 @@
 \name{multipol-package}
 \alias{multipol-package}
 \docType{package}
-\title{
-Multivariate polynomials
-}
+\title{Multivariate polynomials}
 \description{
 Various tools to manipulate and combine multivariate polynomials
 }
 \details{
-\tabular{ll}{
-Package: \tab multipol\cr
-Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2008-01-24\cr
-License: \tab GPL\cr
-}
 
-Basically, coerce an array to a multivariate polynomial (a
-\dQuote{multipol}) using \code{as.multipol()}.
+Multidimensional arrays are interpreted in a natural way as multivariate
+polynomials.
 
 Taking a matrix \code{a} as an example, because this has two dimensions
 it may be viewed as a bivariate polynomial with \code{a[i,j]} being the
@@ -34,17 +25,16 @@ are multivariate polynomials.
 Even quite small multipols are computationally intense; many
 coefficients have to be calculated and each is the sum of many terms.
 
-The package would benefit \strong{enormously} by being able to use a
-sparse array class.
+The package is almost completely superceded by the \CRANpkg{spray} and
+\CRANpkg{mvp} packages, which use a sparse array system for efficiency.
+
 }
 \author{
-Robin K. S. Hankin
+  \packageAuthor{multipol}
 
-Maintainer:  <hankin.robin@gmail.com>
+Maintainer: \packageMaintainer{multipol}
 }
-\references{
-  none really
-}
+
 \examples{
 
 ones(2)*linear(c(1,-1))                             # x^2-y^2
